@@ -3,6 +3,8 @@ Owner: 0xbDf99A1Bab01F191DBA5Bf895A323A2CC2FF1Cd0
 Investor 1: 0x3B0B25ad9C30eAD90d94b2627F055437Ba59D815
 Investor 2: 0xb6349CD18aA18abD4A620BdEAa2AA25a6D3252Eb
 
+Pendientes 28/12/2021
+
 Pendientes 18/11/2021:
 1. Ejecutar Security Check
 2. Reparar React
