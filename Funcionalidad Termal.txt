@@ -1,0 +1,28 @@
+Funcionalidad
+
++ Inversionistas
+- Crear Inversionistas
+- Actualizar el estatus de los inversionistas
+- Enviar Dai al contrato
+- Dar seguimiento a la cantidad invertida
+- Recibir Termal (1:1)
+
++ Startups
+- Crear Startups
+- Activar/Desactivar el estatus de las startups
+- Crear un contrato
+- Firmar el contrato
+- Recibir Dai del contrato
+- Recibir Termal
+
++ General
+- Obtener el balance de DAI del contrato Termal
+- Visualizar la cantidad total del Token Termal
+- Obtener el balance del token Termal
+- Validar Inversionistas registrados
+- Visualizar el total de startups registrados
+- Visualizar el total de Inversionistas registrados
+- Integración con el Token DAI en Kovan
+- Subir a Heroku el sitio web
+- Regresar DAI al inversionista
+- La startup regresa DAI, pero no regresa el Termal

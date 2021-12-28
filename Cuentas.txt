@@ -1,0 +1,11 @@
+https://desolate-tundra-94662.herokuapp.com/
+
+Owner: 0x3b0b25ad9c30ead90d94b2627f055437ba59d815
+Private Key: 2e8b12fa2924dea65d8e1e20506c9c366072d253189bba78ec3c5b0baec28d51
+
+Investor: 0xb6349cd18aa18abd4a620bdeaa2aa25a6d3252eb
+Private Key: c59c1af62f2bb9cb669172500c672400f1728ea6520bfec235a68700f625b302
+
+Startup: 0x918936081E12fFA1602ce48F2b9c86814ea38D1A
+Private Key: d5be7a57003b3e5ef6d97be607dae975a36ba800cb8dfcb225f8ece3d4b7aa57
+

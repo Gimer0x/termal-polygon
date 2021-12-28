@@ -1,0 +1,5 @@
+node_modules/
+logs/
+build/
+termal-2.0.code-workspace
+truffle-config.js
