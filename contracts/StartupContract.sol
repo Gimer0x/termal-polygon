@@ -28,7 +28,6 @@ contract StartupContract is Ownable {
     
     event LogSetMonths(address _owner, uint _fundingMonths, uint _honeymoon, uint _interestOnly, uint _interestAndCapital);
     
-  
     constructor(
             address _startupWallet,
             uint _initialLoan,          // Funding total amount
