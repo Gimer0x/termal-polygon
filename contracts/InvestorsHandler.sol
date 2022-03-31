@@ -70,6 +70,7 @@ contract InvestorsHandler is Ownable {
         view
         returns (bool)
     {
+        require(investors[_investor].hasContract, "Investor has no contract!");
         return InvestorContract(investors[_investor].investorContractAddress).signature();
     }
 

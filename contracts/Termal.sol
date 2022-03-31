@@ -33,7 +33,7 @@ contract Termal is Ownable {
 
     function investorDepositDai(uint _amount) external {
         require(investorsHandler.isValidInvestor(msg.sender), "Investor not registered!");
-        require(investorsHandler.getSignatureStatus(msg.sender), "Startup should have a signed contract!");
+        require(investorsHandler.getSignatureStatus(msg.sender), "Investor should have a signed contract!");
         
         //bool approved = daiToken.approve(address(this), _amount);
         //require(approved, "Approved failed!");
@@ -52,7 +52,7 @@ contract Termal is Ownable {
 
     // This function should be used by startups to deposit DAI
     function returnDaiStartup(uint _amount) external {
-        
+        require(startupsHandler.isValidStartup(msg.sender), "Startup should be valid!");
         bool success = daiToken.transferFrom(msg.sender, address(this), _amount);
         require(success, "Deposit failed!");
 
@@ -101,8 +101,9 @@ contract Termal is Ownable {
         return daiToken.balanceOf(address(this));
     }
 
-    //This function returns the Termal tottal supply
-    function getTermalTotalSupply()
+    // This function returns the Termal tottal supply
+    // Probably we don't need these two functions
+    /*function getTermalTotalSupply()
         external
         view
         returns (uint)
@@ -116,6 +117,6 @@ contract Termal is Ownable {
         returns (uint)
     {
         return termalToken.balanceOf(_wallet);
-    }
+    } */
     
 }

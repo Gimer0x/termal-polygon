@@ -97,28 +97,29 @@ contract StartupsHandler is Ownable {
         emit LogNewStartupStatus(msg.sender, _startupAddress, _status);
     }
 
-    function getSignatureStatus(address _investor)
+    function getSignatureStatus(address _startup)
         public
         view
         returns (bool)
     {
-        return StartupContract(startups[_investor].startupContractAddress).signature();
+        require(isValidStartup(_startup), "Startup is not registered!");
+        return StartupContract(startups[_startup].startupContractAddress).signature();
     }
 
     function addDepositDai(address _receiver, uint _amount) external {
-        require(isValidStartup(_receiver), "Investor not registered!");
+        require(isValidStartup(_receiver), "Investor is not registered!");
         
         startups[_receiver].daiReceived += _amount;
     }
 
     function addReturnedDai(address _receiver, uint _amount) external {
-        require(isValidStartup(_receiver), "Investor not registered!");
+        require(isValidStartup(_receiver), "Startup is not registered!");
         
         startups[_receiver].daiReturned += _amount;
     }
 
     function addReturnedTermal(address _receiver, uint _amount) external {
-        require(isValidStartup(_receiver), "Investor not registered!");
+        require(isValidStartup(_receiver), "Startup is not registered!");
         
         startups[_receiver].termalReturned += _amount;
     }
