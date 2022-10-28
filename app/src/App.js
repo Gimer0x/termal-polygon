@@ -213,6 +213,7 @@ function App() {
     const _address = e.target.elements[0].value;
     try{
       let result = await startupsHandler.methods.startups(_address).call();
+      console.log(result[2]);
       setValidStartup(result[2]);
     } catch(e){
       console.error(e);
@@ -232,7 +233,7 @@ function App() {
       console.error(e);
     }
 
-    window.location.reload();
+    //window.location.reload();
   }
 
   async function sendDaiToStartup(e) {
@@ -395,7 +396,7 @@ function App() {
     } catch(e){
       console.error(e);
     }
-    window.location.reload();
+    //window.location.reload();
   }
 
   async function returnDai(e) {
@@ -460,7 +461,8 @@ function App() {
           _minConvertionRate,
           _termalCoinPercentage,
           _stableCoinPercentage,
-          _maxProjectime
+          _maxProjectime,
+          30
           )
         .send({from: accounts[0]});
 
@@ -498,6 +500,152 @@ function App() {
       console.error(e);
     }
     window.location.reload();
+  }
+
+  /**
+   * Copy of Excel's PMT function.
+   * Credit: http://stackoverflow.com/questions/2094967/excel-pmt-function-in-js
+   *
+   * @param rate_per_period       The interest rate for the loan.
+   * @param number_of_payments    The total number of payments for the loan in months.
+   * @param present_value         The present value, or the total amount that a series of future payments is worth now;
+   *                              Also known as the principal.
+   * @param future_value          The future value, or a cash balance you want to attain after the last payment is made.
+   *                              If fv is omitted, it is assumed to be 0 (zero), that is, the future value of a loan is 0.
+   * @param type                  Optional, defaults to 0. The number 0 (zero) or 1 and indicates when payments are due.
+   *                              0 = At the end of period
+   *                              1 = At the beginning of the period
+   * @returns {number}
+   */
+  function pmt(rate_per_period, number_of_payments, present_value, future_value, type){
+    future_value = typeof future_value !== 'undefined' ? future_value : 0;
+    type = typeof type !== 'undefined' ? type : 0;
+
+  if(rate_per_period != 0.0){
+    // Interest rate exists
+    var q = Math.pow(1 + rate_per_period, number_of_payments);
+    return -(rate_per_period * (future_value + (q * present_value))) / ((-1 + q) * (1 + rate_per_period * (type)));
+
+  } else if(number_of_payments != 0.0){
+    // No interest rate, but number of payments exists
+    return -(future_value + present_value) / number_of_payments;
+  }
+
+  return 0;
+  }
+
+  async function generateCalendar(e) {
+    e.preventDefault();
+    const _wallet = e.target.elements[0].value;
+    try{
+      let results = await startupsHandler.methods.startups(_wallet).call();
+      setStartupContract(results[4]);
+
+      const startupContractAddress = results[4];
+      const contractInstance = new web3.eth.Contract(
+        StartupContract.abi,
+        startupContractAddress
+      );
+
+      //const _isSigned = await contractInstance.methods.signature().call();
+      //setIsSigned(_isSigned);
+      
+      let initialLoan  = await contractInstance.methods.initialLoan().call();
+      const _managementFee = await contractInstance.methods.interestRate().call();
+      const managementFee = initialLoan * _managementFee/100 * 1.16;
+
+      const maxConvertionRate = await contractInstance.methods.maxConvertionRate().call();
+      const minConvertionRate = await contractInstance.methods.minConvertionRate().call();
+      const interestOnly = await contractInstance.methods.interestOnly().call();
+      const fundingMonths = await contractInstance.methods.fundingMonths().call();
+      const maxProjectTime = await contractInstance.methods.maxProjectTime().call();
+
+      const activeFee = await contractInstance.methods.activeFee().call();
+      console.log("Active Fee: ", activeFee);
+      const honeymoon = await contractInstance.methods.honeymoon().call();
+      console.log("Honeymoon:", honeymoon);
+      // Disposición de Efectivo
+      console.log("Monthly allowance: ")
+      const saldo = initialLoan/fundingMonths;
+      let payments = 0;
+      let interes = 0;
+      let totalInteres = 0;
+      for(let i=0; i < fundingMonths-1; i++){
+        payments = payments + saldo;
+
+        interes = payments * activeFee/100/12;
+        totalInteres += interes;
+        console.log((i + 1) + " - Saldo: " + payments.toFixed(2) + " Amortizacion: 0 - Interes: " + interes.toFixed(2) + " - IVA: 0 - Total a pagar: 0,00");
+      }
+
+      interes = initialLoan * activeFee/100/12;
+      totalInteres += interes;
+      console.log( fundingMonths + " - Saldo: " + initialLoan + " Amortizacion: 0 - Interes:" + interes.toFixed(2) + " IVA: 0 - total a pagar: 0,00");
+
+      // Meses de gracia
+      console.log("Honeymoon: ");
+      
+      for(let i=0; i < honeymoon; i++) {
+        console.log((i + 1) + " Saldo: " + initialLoan + " Amortizacion: 0 - interes: " + interes.toFixed(2) + " IVA: 0 - total a pagar: 0,00");
+        totalInteres += interes;
+      }
+      // Saldo Insoluto
+      let initialPayment = parseInt(initialLoan.toString()) + totalInteres;
+
+      console.log("Initial Payment: " + initialPayment);
+
+      //Primero Intereses
+      console.log("Fees first:")
+      let IVA = 0;
+      let total = 0;
+      let investorPayment = initialPayment * (18/100)/12;
+      let convertionRate = 0;
+      for(let i=0; i < interestOnly; i++) {
+        interes = initialPayment * activeFee/100/12;
+        IVA = (interes.toFixed(2) * .16);
+        total = interes + IVA;
+        console.log( (i + 1) + " - Saldo: " + initialPayment + " Amortizacion: 0 - Interes: " + interes.toFixed(2) + 
+        " IVA: " + IVA + " - total: " + total + " - Convertion: " + maxConvertionRate + " - Investor: " + investorPayment + " Talem: " + (interes - investorPayment));
+      }
+      console.log("Pagos sobre saldo insoluto: ");
+      let PMT = (-1) * pmt((.3 * 1.16)/12, 12, initialPayment);
+      
+      let amortization = 0;
+
+      convertionRate = maxConvertionRate;
+
+      for (let i = 0; i < 12; i++) {
+        initialPayment = initialPayment - amortization;
+        interes = initialPayment * (activeFee/12/100);
+        IVA = initialPayment * ((activeFee * 1.16)/12/100) - interes;
+        amortization = PMT - interes - IVA;
+
+        convertionRate = convertionRate - (maxConvertionRate - minConvertionRate)/12;
+
+        investorPayment = initialPayment * .18/12;
+
+        console.log( (i + 1) + " - Saldo: " + initialPayment.toFixed(2) + " Amortizacion: " + amortization.toFixed(2) + " - Interes: " + interes.toFixed(2) + 
+        " IVA: " + IVA.toFixed(2) + " - total: " + PMT.toFixed(2) + " - Convertion: " + convertionRate.toFixed(2) + " - Investor: " + investorPayment.toFixed(2) + " Talem: " + (interes - investorPayment).toFixed(2));
+      }
+
+      
+
+      /*address public startupWallet;
+      uint public date;
+      bool public signature;
+      
+      uint public termalCoinPercentage;
+      uint public stableCoinPercentage;
+      uint public interestOnly; //Interest only Months
+      uint public interestAndCapital; //Interes and capital payments
+      uint public maxProjectTime;
+      uint public activeFee; */
+
+
+    } catch(e){
+      console.error(e);
+    }
+
   }
   
   if(!web3) {
@@ -747,6 +895,20 @@ function App() {
             <button type="submit" className="btn btn-primary">Submit</button>
           </form>
           <p></p>
+
+          <p></p>
+          <h2>Generate Calendar</h2>
+          <form onSubmit= {e => generateCalendar(e)}>
+            <div className="form-group">
+              <label htmlFor="address">Adress: </label>
+              <input type="text" className="form-control" id="startupWallet" />
+              
+            </div>
+            <p></p>
+            <button type="submit" className="btn btn-primary">Submit</button>
+          </form>
+          <p></p>
+
         </div>
       </div>
     </div>

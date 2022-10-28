@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.14;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
@@ -21,6 +21,7 @@ contract StartupContract is Ownable {
     uint public interestOnly; //Interest only Months
     uint public interestAndCapital; //Interes and capital payments
     uint public maxProjectTime;
+    uint public activeFee;
     
     event LogContractCreation(address _startupProfile, uint _initialLoan, uint _date, uint _interestRate);
     event LogStartupSingature(address _sender, bool _signature, address _startupProfile, uint);
@@ -30,26 +31,28 @@ contract StartupContract is Ownable {
     
     constructor(
             address _startupWallet,
-            uint _initialLoan,          // Funding total amount
-            uint _interestRate,         // %Management fee
+            uint _initialLoan,          
+            uint _interestRate,         
             uint _maxConvertionRate,
             uint _minConvertionRate,
             uint _termalCoinPercentage,
             uint _stableCoinPercentage,
-            uint _maxProjectTime
+            uint _maxProjectTime,
+            uint _activeFee
             )
         {
-            startupWallet = _startupWallet;
-            initialLoan = _initialLoan;
-            date = block.timestamp;
-            signature = false; // This is false until startup accepts the contract.
-            interestRate = _interestRate;
-            maxConvertionRate = _maxConvertionRate;
-            minConvertionRate = _minConvertionRate;
-            termalCoinPercentage = _termalCoinPercentage;
-            stableCoinPercentage = _stableCoinPercentage;
-            maxProjectTime = _maxProjectTime;
-            setMonths(3, 2, 3, 10); 
+            startupWallet = _startupWallet; // Startup public key
+            initialLoan = _initialLoan;     // Initial loan without interests
+            date = block.timestamp;         // Current date
+            signature = false;              // This is false until startup accepts the contract.
+            interestRate = _interestRate;   // Managemet feee
+            maxConvertionRate = _maxConvertionRate; // Maximum convertion rate
+            minConvertionRate = _minConvertionRate; // Minimum convertion rate
+            termalCoinPercentage = _termalCoinPercentage; // Percentage of termal coins granted to the startup
+            stableCoinPercentage = _stableCoinPercentage; // Percentage of the stable coin granted to the startup
+            maxProjectTime = _maxProjectTime;             // Maximum total duration of the program
+            setMonths(3, 3, 4, 12);                       // Standar number of months
+            activeFee = _activeFee;                       // Percentage interest per year
             emit LogContractCreation(startupWallet, initialLoan, date, interestRate);
         }
 

@@ -1,7 +1,10 @@
 const { expectRevert } = require('@openzeppelin/test-helpers');
 const Termal = artifacts.require('Termal');
+
 const TermalToken = artifacts.require('TermalToken');
 const DaiToken = artifacts.require('DaiToken');
+const StartupToken = artifacts.require('StartupToken');
+
 const StartupContract = artifacts.require('StartupContract');
 const InvestorContract = artifacts.require('InvestorContract');
 
@@ -18,10 +21,10 @@ contract('Termal', (accounts) => {
   let investorsHandler = null;
   let startupsHandler = null;
   const _owner = accounts[0];
-  const _startup = accounts[5];
-  const _investor1 = accounts[2];
-  const _investor2 = accounts[3];
-  const _notOwner = accounts[4];
+  const _startup = accounts[2];
+  const _investor1 = accounts[3];
+  const _investor2 = accounts[4];
+  const _notOwner = accounts[5];
   const _notStartup = accounts[6];
   const _first = 1;
   const _second = 2;
@@ -29,20 +32,22 @@ contract('Termal', (accounts) => {
   const _initialSupply = process.env.INITIAL_TOKENS;
   
 
-  const _initialLoan = 100;
+  const _initialLoan = 1000000;
   const _interestRate = 2; 
   const _maxConvertionRate = 15;
   const _minConvertionRate = 5;
   const _termalCoinPercentage = 20;
   const _stableCoinPercentage = 80;
-  const _maxProjectTime = 18;
-  const _managementFee = 5;
+  const _maxProjectTime = 22;
+  const _managementFee = 3;
   const _termalCoinRatio = 1;
-  const _duration = 12;
+  const _duration = 10;
+  const _activeFee = 30;
     
   before(async () => {
     termal = await Termal.deployed(); 
     termalToken = await TermalToken.deployed();
+    startupToken = await StartupToken.deployed();
     dai = await DaiToken.deployed();
     investorsHandler = await InvestorsHandler.deployed();
     startupsHandler = await StartupsHandler.deployed();
@@ -55,7 +60,9 @@ contract('Termal', (accounts) => {
 
   it('should check Ether and token termal', async () => {
     const etherContractBalance = await web3.eth.getBalance(termal.address);
+
     const ONE_ETHER = web3.utils.toBN(web3.utils.toWei('1'));
+    
     assert(etherContractBalance == ONE_ETHER, "should be the same token address!");
 
     const tokenContract = await termal.termalToken();
@@ -68,6 +75,11 @@ contract('Termal', (accounts) => {
     const balance = await termalToken.balanceOf(_owner);
     assert(balance == process.env.TOKENS_TO_CONTRACT);
   });
+
+  it('should verify startup token balance', async () => {
+    const balance = await startupToken.balanceOf(_startup);
+    assert(balance == process.env.STARTUP_TOKENS, "incorrect balance");
+  })
 
   it ('should get Handlers addresses', async () => {
     const investorsHandlerDeployed = await termal.investorsHandler();
@@ -146,6 +158,8 @@ contract('Termal', (accounts) => {
     assert(status, "Signature status should be true!");
     
   });
+
+ 
   
  it('should receive Dai tokens from investors', async () => {
     const contractTermalBalance = await termalToken.balanceOf(termal.address);
@@ -188,7 +202,7 @@ contract('Termal', (accounts) => {
   });
   
   it('should register a startup', async () => {
-    await startupsHandler.createStartup(_startup, "Startup 1", {from: _owner});
+    await startupsHandler.createStartup(_startup, "Startup 1", startupToken.address, {from: _owner});
 
     let newStartup = await startupsHandler.startups(_startup);
     assert(newStartup[2] == true, "Startup was not created!");
@@ -196,7 +210,7 @@ contract('Termal', (accounts) => {
     let totalStartups = await startupsHandler.getTotalStartups();
     assert(totalStartups.toNumber() == 1);
   });
-  
+
   it('should be able to create a contract', async () => {
     const tx = await startupsHandler.createStartupContract(
       _startup, 
@@ -207,6 +221,7 @@ contract('Termal', (accounts) => {
       _termalCoinPercentage, 
       _stableCoinPercentage,
       _maxProjectTime,
+      _activeFee,
       {from: _owner}
       );
     
@@ -248,6 +263,43 @@ contract('Termal', (accounts) => {
     
     const newContractDaiBalance = await termal.getDaiContractBalance();
     assert(newContractDaiBalance.toNumber() == (contractDaiBalance - _transfer), "Termal Dai balance is wrong!");
+  });
+
+  it('should deposit tokens to contract from startup', async () => {
+    const tokenAmount = 100;
+
+    const contractInitialTokenBalance = await startupToken.balanceOf(termal.address);
+    const startupInitialTokenBalance = await startupToken.balanceOf(_startup);
+    
+    console.log("contractInitialTokenBalance: ", contractInitialTokenBalance.toNumber());
+    console.log("startupInitialTokenBalance", startupInitialTokenBalance.toNumber());
+    
+    //console.log("startupInitialTokenBalance: ", startupInitialTokenBalance.toNumber());
+
+    //await expectRevert(termal.returnDaiStartup(daiAmount, {from:_notStartup}), "Startup should be valid!");
+
+    await startupToken.approve(termal.address, tokenAmount, {from:_startup});
+    await termal.depositStartupToken(tokenAmount, {from: _startup});
+
+    //console.log(deposit);
+
+    const contractNewTokenBalance = await startupToken.balanceOf(termal.address);
+    const startupNewTokenBalance = await startupToken.balanceOf(_startup);
+
+    await startupToken.approve(termal.address, 75, {from:_startup});
+    await termal.depositStartupToken(75, {from: _startup});
+
+    let balance = await termal.startupTokenBalance(_startup);
+    console.log(balance.toNumber());
+
+    assert(contractNewTokenBalance.toNumber() == (contractInitialTokenBalance.toNumber() + tokenAmount), "Contract Startup Token balance is wrong!");
+    assert(startupNewTokenBalance.toNumber() == (startupInitialTokenBalance.toNumber() - tokenAmount), "Startup Startup balance is wrong!");
+
+    //console.log("contractNewDaiBalance: ", contractNewDaiBalance.toNumber());
+    //console.log("startupNewDaiBalance: ", startupNewDaiBalance.toNumber());
+
+    //let startupInfo = await startupsHandler.startups(_startup);
+    //assert(startupInfo[7] == daiAmount, "Dai was not returned!");
   });
 
   it('should return Dai to contracts from startup', async () => {

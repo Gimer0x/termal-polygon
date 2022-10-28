@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.14;
 
 import "./StartupsHandler.sol";
 import "./InvestorsHandler.sol";
@@ -15,6 +15,8 @@ contract Termal is Ownable {
 
     event LogInvestorDepositDai(address _sender, address _receipent, uint _amount);
     event LogStartupReturnTermal(address _sender, address _contract, uint _amount);
+
+    mapping (address => uint) public startupTokenBalance;
 
     /*event LogCreateStartup(address _newStartupAddress, address _owner);
     event LogNewStartupStatus(address _owner, address _startupAddress, bool _status);
@@ -35,16 +37,15 @@ contract Termal is Ownable {
         require(investorsHandler.isValidInvestor(msg.sender), "Investor not registered!");
         require(investorsHandler.getSignatureStatus(msg.sender), "Investor should have a signed contract!");
         
-        //bool approved = daiToken.approve(address(this), _amount);
-        //require(approved, "Approved failed!");
-
+        require(daiToken.allowance(msg.sender, address(this)) >= _amount, "Not enough allowance!");
         bool success = daiToken.transferFrom(msg.sender, address(this), _amount);
 
         require(success, "Deposit failed!");
         investorsHandler.addDepositDai(msg.sender, _amount);
-        
+
         //ratio?
         termalToken.transfer(msg.sender, _amount);
+
         investorsHandler.addDepositTermal(msg.sender, _amount);
 
         emit LogInvestorDepositDai(msg.sender, address(this), _amount);
@@ -69,7 +70,33 @@ contract Termal is Ownable {
         emit LogStartupReturnTermal(msg.sender, address(this), _amount);
     }
 
-    
+    function depositStartupToken(uint _amount)
+        public
+        returns(bool)
+    {
+        require(startupsHandler.isValidStartup(msg.sender), "Startup should be valid!");
+        //require(startupsHandler.getSignatureStatus(msg.sender), "Contract should be signed first!");
+
+        address tokenAddress = startupsHandler.getStartupTokenAddress(msg.sender);
+        IERC20 startupToken = IERC20(tokenAddress);
+
+        require(startupToken.allowance(msg.sender, address(this)) >= _amount, "Allowance is not enough!");
+        
+        bool success = startupToken.transferFrom(msg.sender, address(this), _amount);
+
+        startupTokenBalance[msg.sender] += _amount;
+
+        return success;
+    }
+
+    function getStartupTokenBalance(address startupToken, address _wallet)
+        external
+        view
+        returns (uint)
+    {
+        return IERC20(startupToken).balanceOf(_wallet);
+    }
+
     function transferDaiToStartup(address _startupAddress, uint _amount)
         onlyOwner()
         public
@@ -103,7 +130,7 @@ contract Termal is Ownable {
 
     // This function returns the Termal tottal supply
     // Probably we don't need these two functions
-    /*function getTermalTotalSupply()
+    function getTermalTotalSupply()
         external
         view
         returns (uint)
@@ -117,6 +144,6 @@ contract Termal is Ownable {
         returns (uint)
     {
         return termalToken.balanceOf(_wallet);
-    } */
-    
+    }
+   
 }

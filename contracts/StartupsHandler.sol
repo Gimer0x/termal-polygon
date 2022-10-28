@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.14;
 
 import "./StartupContract.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract StartupsHandler is Ownable {
     
@@ -16,7 +17,15 @@ contract StartupsHandler is Ownable {
         uint daiReceived;
         uint daiReturned;
         uint termalReturned;
+        address token;
     }
+
+    struct token
+    {
+        address tokenAddress;
+        uint balance;
+    }
+    mapping(address => token) public startupToken;
 
     mapping (address => Startup) public startups;
     address[] public startupList;
@@ -29,13 +38,14 @@ contract StartupsHandler is Ownable {
 
     function createStartup(
             address _startupWallet, 
-            string memory _startupName
+            string memory _startupName,
+            address tokenAddress
             )
         onlyOwner()
         external
     {
         require(!startups[_startupWallet].status, "Startup is registered!");
-        startups[_startupWallet] = Startup(_startupName, block.timestamp, true, false, address(0), 0, 0, 0, 0);
+        startups[_startupWallet] = Startup(_startupName, block.timestamp, true, false, address(0), 0, 0, 0, 0, tokenAddress);
         startupList.push(_startupWallet);
         emit LogCreateStartup(_startupWallet, msg.sender);
     }
@@ -48,7 +58,8 @@ contract StartupsHandler is Ownable {
             uint _minConvertionRate,
             uint _termalCoinPercentage,
             uint _stableCoinPercentage,
-            uint _maxProjectime
+            uint _maxProjectime,
+            uint _activeFee
         )
         onlyOwner()
         external
@@ -64,7 +75,8 @@ contract StartupsHandler is Ownable {
                 _minConvertionRate, 
                 _termalCoinPercentage, 
                 _stableCoinPercentage, 
-                _maxProjectime
+                _maxProjectime,
+                _activeFee
                 );
         startups[_startupWallet].hasContract = true;
         startups[_startupWallet].startupContractAddress = address(newStartupContract);
@@ -95,6 +107,16 @@ contract StartupsHandler is Ownable {
         require(startups[_startupAddress].status != _status, "New investor's status should be different!");
         startups[_startupAddress].status = _status;
         emit LogNewStartupStatus(msg.sender, _startupAddress, _status);
+    }
+
+    function getStartupTokenAddress(address _startup)
+        public
+        view
+        returns (address)
+    {
+        require(isValidStartup(_startup), "Startup is not registered!");
+        
+        return startups[_startup].token;
     }
 
     function getSignatureStatus(address _startup)
