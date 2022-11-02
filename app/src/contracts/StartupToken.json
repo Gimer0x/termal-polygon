@@ -8644,6 +8644,284 @@
     ],
     "src": "31:239:9"
   },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/StartupToken.sol",
+    "exportedSymbols": {
+      "Context": [
+        774
+      ],
+      "ERC20": [
+        649
+      ],
+      "IERC20": [
+        727
+      ],
+      "IERC20Metadata": [
+        752
+      ],
+      "StartupToken": [
+        1844
+      ]
+    },
+    "id": 1845,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1824,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".14"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "31:24:9"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
+        "id": 1825,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 1845,
+        "sourceUnit": 650,
+        "src": "57:55:9",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 1826,
+              "name": "ERC20",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 649,
+              "src": "139:5:9"
+            },
+            "id": 1827,
+            "nodeType": "InheritanceSpecifier",
+            "src": "139:5:9"
+          }
+        ],
+        "canonicalName": "StartupToken",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 1844,
+        "linearizedBaseContracts": [
+          1844,
+          649,
+          752,
+          727,
+          774
+        ],
+        "name": "StartupToken",
+        "nameLocation": "123:12:9",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 1842,
+              "nodeType": "Block",
+              "src": "218:49:9",
+              "statements": [
+                {
+                  "expression": {
+                    "arguments": [
+                      {
+                        "expression": {
+                          "id": 1837,
+                          "name": "msg",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 4294967281,
+                          "src": "234:3:9",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_magic_message",
+                            "typeString": "msg"
+                          }
+                        },
+                        "id": 1838,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "memberName": "sender",
+                        "nodeType": "MemberAccess",
+                        "src": "234:10:9",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      {
+                        "id": 1839,
+                        "name": "initialSupply",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 1829,
+                        "src": "246:13:9",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        },
+                        {
+                          "typeIdentifier": "t_uint256",
+                          "typeString": "uint256"
+                        }
+                      ],
+                      "id": 1836,
+                      "name": "_mint",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 509,
+                      "src": "228:5:9",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_uint256_$returns$__$",
+                        "typeString": "function (address,uint256)"
+                      }
+                    },
+                    "id": 1840,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "228:32:9",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 1841,
+                  "nodeType": "ExpressionStatement",
+                  "src": "228:32:9"
+                }
+              ]
+            },
+            "id": 1843,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [
+              {
+                "arguments": [
+                  {
+                    "hexValue": "5374617274757020546f6b656e",
+                    "id": 1832,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "193:15:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_2b7b6d07b4bcddd966ad7fbe2e1d137ae5bef47a5d234c0134e07eb541f54844",
+                      "typeString": "literal_string \"Startup Token\""
+                    },
+                    "value": "Startup Token"
+                  },
+                  {
+                    "hexValue": "53544152",
+                    "id": 1833,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "string",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "210:6:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_stringliteral_2fe5954af1d01e539488674d833fae3498814fd30d6e6caa1786c7eca194a125",
+                      "typeString": "literal_string \"STAR\""
+                    },
+                    "value": "STAR"
+                  }
+                ],
+                "id": 1834,
+                "kind": "baseConstructorSpecifier",
+                "modifierName": {
+                  "id": 1831,
+                  "name": "ERC20",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 649,
+                  "src": "187:5:9"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "187:30:9"
+              }
+            ],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 1830,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 1829,
+                  "mutability": "mutable",
+                  "name": "initialSupply",
+                  "nameLocation": "172:13:9",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 1843,
+                  "src": "164:21:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 1828,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "164:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "163:23:9"
+            },
+            "returnParameters": {
+              "id": 1835,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "218:0:9"
+            },
+            "scope": 1844,
+            "src": "152:115:9",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 1845,
+        "src": "114:156:9",
+        "usedErrors": []
+      }
+    ],
+    "src": "31:239:9"
+  },
   "compiler": {
     "name": "solc",
     "version": "0.8.14+commit.80d49f37.Emscripten.clang"
@@ -8768,10 +9046,79 @@
       "links": {},
       "address": "0x5f8a8a641523942E95898cEB7f53F3175325BF69",
       "transactionHash": "0x8b3f0e799f7655d9f85bccb3b7f0806bfeb0b28043bd6b88e662dddeb4ae3ed2"
+    },
+    "1667285925740": {
+      "events": {
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "spender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Approval",
+          "type": "event"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "name": "Transfer",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0x628869E98eeBECA1681F26eC43b1ca1B28249E87",
+      "transactionHash": "0xd78002b69c9c329be1e9891dc19b63b3352b4191634e1c614c823338f1b6ff22"
+    },
+    "1667287498561": {
+      "events": {},
+      "links": {},
+      "address": "0x80b6fC40597076f565288259B906F2bDaAb421c5",
+      "transactionHash": "0xe5b724d93576da1375deb4f6b2c10b3a58c0a3412a6103129408338343908e42"
+    },
+    "1667289285724": {
+      "events": {},
+      "links": {},
+      "address": "0x80b6fC40597076f565288259B906F2bDaAb421c5",
+      "transactionHash": "0x0600a83a51d9bdb7bd0ae119e2925fe1d947c6ab5740c65162b03cc731c741d3"
     }
   },
-  "schemaVersion": "3.4.7",
-  "updatedAt": "2022-06-24T14:25:33.662Z",
+  "schemaVersion": "3.4.4",
+  "updatedAt": "2022-11-01T07:57:31.058Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
